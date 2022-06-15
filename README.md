@@ -111,8 +111,85 @@ Next type the n command to. create a new partition.  Pick partition number and s
 
   
 Once your disk is partioned  check status of the partition run lsblk or fdisk:
+
+Example of creating a partion with gdkisk
+Before running gdkisk
 ```
-$ sudo fdisk -l /dev/sdb
+$ lsblk
+NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+vda                    252:0    0   10G  0 disk 
+└─vda1                 252:1    0   10G  0 part 
+  ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+  └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+vdb                    252:16   0    1G  0 disk 
+vdc                    252:32   0    1G  0 disk
+```
+Running gdisk with these options:
+In the interactive prompt, enter n
+Select parition number = 1 (for vdd1)
+Select default first sector = 2048
+Select +500M when asked for last sector
+Use default hex code = 8300
+Finally type w to write to the partition table
+
+```
+$ sudo gdisk /dev/vdb
+GPT fdisk (gdisk) version 1.0.3
+
+Partition table scan:
+  MBR: not present
+  BSD: not present
+  APM: not present
+  GPT: not present
+
+Creating new GPT entries.
+
+Command (? for help): GPT
+b       back up GPT data to a file
+c       change a partition's name
+d       delete a partition
+i       show detailed information on a partition
+l       list known partition types
+n       add a new partition
+o       create a new empty GUID partition table (GPT)
+p       print the partition table
+q       quit without saving changes
+r       recovery and transformation options (experts only)
+s       sort partitions
+t       change a partition's type code
+v       verify disk
+w       write table to disk and exit
+x       extra functionality (experts only)
+?       print this menu
+
+Command (? for help): n
+Partition number (1-128, default 1): 1
+First sector (34-2097118, default = 2048) or {+-}size{KMGTP}: 
+Last sector (2048-2097118, default = 2097118) or {+-}size{KMGTP}: +500M
+Current type is 'Linux filesystem'
+Hex code or GUID (L to show codes, Enter = 8300): 8300
+Changed type of partition to 'Linux filesystem'
+
+Command (? for help): w
+
+Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING
+PARTITIONS!!
+
+Do you want to proceed? (Y/N): Y
+OK; writing new GUID partition table (GPT) to /dev/vdb.
+The operation has completed successfully.
+```
+After running gdisk:
+``
+$ lsblk
+NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+vda                    252:0    0   10G  0 disk 
+└─vda1                 252:1    0   10G  0 part 
+  ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+  └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+vdb                    252:16   0    1G  0 disk 
+└─vdb1                 252:17   0  500M  0 part 
+vdc                    252:32   0    1G  0 disk 
 ```
 #### File Systems in Linux  
 Partitioning alone do not make the disks usable.  TO write disk you must create a file system and mount to a direct to read and write data to the partition.  
