@@ -1,6 +1,8 @@
 # KodeKloud Linux Basics: Storage in Linux  
 
 [KodeKloud Linux Basics Course Notes Table of Contents](https://github.com/pslucas0212/LinuxBasics)
+
+## Storage in Linux
   
 #### Disk Partitions
 Basic Concepts like block devices  
