@@ -3,16 +3,45 @@
 [KodeKloud Linux Basics Course Notes Table of Contents](https://github.com/pslucas0212/LinuxBasics)
 
 ## Storage in Linux
-  
-#### Disk Partitions
-Basic Concepts like block devices  
-Block device is a type of file that can be found under the /dev direction and represents a spinning disk or SSD. It is a called block storage cause data is written in blocks or "chunks" of data  
-  
+
+## Storage Basics
+
+### Block Devices
+Block device is a type of file that can be found under /dev directory representing a peice of hwardware like a spinning disk or an SSD drive.  It is a called block storage cause data is written and read in blocks or "chunks" of data.
+
+To see list of block devices in your system run:
 To see block storage run:
 ```
 $ lsblk
-$ ls -l /dev/ | grep "^b"
+NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+mmcblk0     179:0    0 29.8G  0 disk 
+├─mmcblk0p1 179:1    0  2.2G  0 part 
+├─mmcblk0p2 179:2    0    1K  0 part 
+├─mmcblk0p5 179:5    0   32M  0 part 
+├─mmcblk0p6 179:6    0  256M  0 part /boot
+└─mmcblk0p7 179:7    0 27.3G  0 part /
 ```
+Or run
+```
+$ ls -l /dev/ | grep "^b"
+brw-rw----  1 root disk      7,   0 Jun  7 16:17 loop0
+brw-rw----  1 root disk      7,   1 Jun  7 16:17 loop1
+brw-rw----  1 root disk      7,   2 Jun  7 16:17 loop2
+brw-rw----  1 root disk      7,   3 Jun  7 16:17 loop3
+brw-rw----  1 root disk      7,   4 Jun  7 16:17 loop4
+brw-rw----  1 root disk      7,   5 Jun  7 16:17 loop5
+brw-rw----  1 root disk      7,   6 Jun  7 16:17 loop6
+brw-rw----  1 root disk      7,   7 Jun  7 16:17 loop7
+brw-rw----  1 root disk    179,   0 Jun  7 16:17 mmcblk0
+brw-rw----  1 root disk    179,   1 Jun  7 16:17 mmcblk0p1
+brw-rw----  1 root disk    179,   2 Jun  7 16:17 mmcblk0p2
+brw-rw----  1 root disk    179,   5 Jun  7 16:17 mmcblk0p5
+brw-rw----  1 root disk    179,   6 Jun  7 16:17 mmcblk0p6
+brw-rw----  1 root disk    179,   7 Jun  7 16:17 mmcblk0p7
+...
+```
+mcblk0 represents the entire disk and the part rerpresents partitions
+
 Each block device has a major and minor number.  The first number reprsent block device type and the second number identifies the whole disk and partitions created  
   
 Major Number | Device Type
@@ -20,34 +49,68 @@ Major Number | Device Type
 1 | RAM
 3 | Hard Disk or CD ROM
 6 | Parallel Printers
-8 | SCSI DISK
+8 | SCSI DISK - fixed naming starting with sdxxx
 
-The diks is broken down into smaller parts of the disk.  Partition segments space for use of a particular purpose.  You don't have to partition a disk.  You can use it as is.  But partitioning makes the disk more usable.  
-  
-Partition information can be foudn with the fdisk command
+From a RHEL 8 VM when running lsblk
 ```
-$ sudo fdisk -l /dev/sda
+$ lsblk
+NAME          MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda             8:0    0  100G  0 disk 
+├─sda1          8:1    0  600M  0 part /boot/efi
+├─sda2          8:2    0    1G  0 part /boot
+└─sda3          8:3    0 98.4G  0 part 
+  ├─rhel-root 253:0    0 63.5G  0 lvm  /
+  ├─rhel-swap 253:1    0    4G  0 lvm  [SWAP]
+  └─rhel-home 253:2    0   31G  0 lvm  /home
+sr0            11:0    1 10.2G  0 rom  
+```
+
+
+The disk can be broken down into smaller parts of the disk called partions.  Partition segments space for use of a particular purpose.  You don't have to partition a disk.  You can use it as is.  But partitioning makes the disk more usable and more flexibiligy.  
+
+Partition information is stored in a partition table.
+  
+Partition information can be found with the fdisk command and can be used to create and delete partitions
+```
+sudo fdisk -l /dev/sda
+[sudo] password for pslucas: 
+Disk /dev/sda: 100 GiB, 107374182400 bytes, 209715200 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: DA76B744-AE84-452C-917F-8A525C722EEF
+
+Device       Start       End   Sectors  Size Type
+/dev/sda1     2048   1230847   1228800  600M EFI System
+/dev/sda2  1230848   3327999   2097152    1G Linux filesystem
+/dev/sda3  3328000 209713151 206385152 98.4G Linux LVM
 ```  
 There are three types of disk partitions
-- Primary
-- Extended
-- Logical partition
-  
-Primary partition used to boot the system.  There is a limit 4 primary partition.   
-  
-Extend partitions host logical partitions - 1 or more.  Extended partition is like a disk drive with its own partitions.  
+- Primary partition used to boot the system.  There is a limit 4 primary partition. 
+- Extend partitions cannot be used on their own but can host logical partitions - 1 or more.  Extended partition is like a disk drive with its own partitions.  You can create and host logical partitions. It has a partiton table that points to one or more partions
+- Logical partition created with an extended partition
 
-Partition table or partitioning scheme defines how a disk is partioned.  We see the traditional MBR partition - Master Boot Record which has been around for over 30 years.  Only 4 primary partitions in MBR and maximum size 2 TB.  If we want more partitions we would use a extended partition and carve out logical partions.   
+
+Partition table or partitioning scheme defines how a disk is partioned.  We see the traditional MBR partition scheme. Master Boot Record which has been around for over 30 years.  Only 4 primary partitions in MBR and maximum size 2 TB.  If we want more than 4 partitions for a disk we would use a extended partition and carve out logical partions.   
   
-GPT is another partition scheme and stands for GUID Partition Table.  A more recent partitioning scheme to address MBR limitations.  GPT allows unlimted number of partitions and no max sizer per partiion.   
+GPT is another partition scheme and stands for GUID Partition Table.  A more recent partitioning scheme to address MBR limitations.  GPT allows unlimted number of partitions per disk and no max sizer per partiion.    Only limited by the OS.  RHEL allows 129 partitions and no limite on size a partition.
 
 Creating partitions
 ```
 $ lsblk
 ```
-If you see a non-partitioned disk run gdisk to partition.  gdisk will is menu driven.  Use $ gdisk ? to see options.   
+If you see a non-partitioned disk run gdisk to partition.  gdisk has a menu driven interface.  Use $ gdisk ? to see options.  gdisk is an improved version of fdisk that works with gpt partition table
   
-Once your disk is partioned run:
+Example gdisk
+```
+$ gdisk /dev/sdb
+```
+Once you are in the gdisk menu, use ? to see all available options.   
+Next type the n command to. create a new partition.  Pick partition number and size of partition.  It will ask for a hex code for the partition type.  Stick Linux filed default 8300.  Type L key to see all available types.  Now type w command to write the disk.
+
+  
+Once your disk is partioned  check status of the partition run lsblk or fdisk:
 ```
 $ sudo fdisk -l /dev/sdb
 ```
