@@ -180,7 +180,7 @@ OK; writing new GUID partition table (GPT) to /dev/vdb.
 The operation has completed successfully.
 ```
 After running gdisk:
-``
+```
 $ lsblk
 NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 vda                    252:0    0   10G  0 disk 
