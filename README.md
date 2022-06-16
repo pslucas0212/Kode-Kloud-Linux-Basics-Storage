@@ -306,9 +306,11 @@ Updated /etc/fstab:
 /dev/vdb        /mnt/data       ext4    rw                0        0
 ``` 
 
-## DAS, NAS and SAN
-Three types of storage - DAS -> Direct Attached Storage, NAS -> Network Attached Storage, SAN -> Storage Area Network (fiber attached)  
-DAS - connects directly to the host system s
+## External Storage DAS, NAS and SAN
+Three types of external storage with High Aavilability - DAS -> Direct Attached Storage, NAS -> Network Attached Storage, SAN -> Storage Area Network (uses a fiber channel)  
+DAS - connects directly to the host system. THe host system seed a directly connect block device.  No firewall and very fast.  Since DAS is directly attached it can't be shared. 
+NAS - Located separately from the hosts that will use it.  The data traverses through the network.  NAS is similar to NFS.  Storage is provide to the hosts via a share and exported via NFS to the host.  Good for sharing storage among many different devices.  Not recommended for production databases or OS installations
+SAN - Provides block storage for business critical applications with high performance/throughput and low latency.  Storage is allocated to hosts in the form of a LUN (Logical Unit Number).  A LUN is a range of blocks provisioned from a pool of shared storage and presented to the server as a logical disk.  The host systems sees the storage as a raw disk and create partions with file systems that are then mounted to the server.  FBCP - FIber channel protocoal use a fibre switch to a HBA (Host bust adapter) in a PCI slot.  Good for Databases, Hypervisors, etc.
   
 
 DAS | NAS | SAN
@@ -320,24 +322,30 @@ Dedicated to single host | Shared Storage | Highly Available
 Ideal for small Businesses | Mid/Large Business | Enterprise Storage
 Suitable for OS | Not suitable for OS | Not suitable for OS
   
- #### NFS File System  
- Saves data in form of files in client/server model.  NFS Server has /software/repos is shared across the network via a mount.  Sharing disk in NFS is called exporting.  
+## NFS File System  
+Unlock block devices, NFS saves data in the form of fiels and works on server client model.  As an exampoel the NFS Server has /software/repos is shared across the network via a mount to local host.    Directory share is called exporting.  
   
-NFS server maintains exports file at /etc/exprots that maintains a list of servers that can access the folder
+NFS server maintains exports file at /etc/exports that defines the clients that access the directories on the NFS server.  
+/etc/exports has a list of cliesnts that can access a particular NFS folder.  You can use hostnames, ip addresses, ip range, or wilde card * for any server.  There maybe a firewall between the clients and NFS and NFS ports may need to be opened for the clients to access the NFS server.    
 ```
 /software/repos hosta hostb hostc
 ```
-Specific ports may have to be opened for NFS to work
+Share the directory on the clients with exportfs command.  
+Share all mounts in the /etc/exports run:
 ```
 $ exportsfs -a
+```
+Allows manually to export a directly
+```
 $ exportsfs -o 10.16.13.201:/software/repos
 ```
-On the server mount the drive with:
+Now you can mount directory to the client.
 ```
 $ mount 10.16.13.201:/software/repos /mnt/software/repos
 ```
   
-#### LVM
+## Logical Volume Manager (LVM)
+
 Logical Volume Manager allows grouping of multiple physcial drives into one volume group where you can then carve out logical volumes.   This allows logical volumes to be easily resized.  
    
  
