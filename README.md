@@ -7,7 +7,7 @@
 ## Storage Basics
 
 ### Block Devices
-Block device is a type of file that can be found under /dev directory representing a peice of hwardware like a spinning disk or an SSD drive.  It is a called block storage cause data is written and read in blocks or "chunks" of data.
+Block device is a type of file that can be found under /dev directory representing a piece of hardware like a spinning disk or an SSD drive.  It is a called block storage cause data is written and read in blocks or "chunks" of data.
 
 To see list of block devices in your system run:
 To see block storage run:
