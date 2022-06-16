@@ -379,7 +379,7 @@ $ vgs
 $ lvresize -L +1G /dev/caleston_vg/vol1
 $ dfh -hP /mnt/vol1
 ```
-After resizind the volume, you will need to resize the filesytem to match the size of the volume
+After resizing the volume, you will need to resize the filesytem to match the size of the volume
 ```
 $ resize2fs /dev/caleston_vg/vol1
 $ df -hP /mnt/vol1
@@ -391,4 +391,102 @@ Logical Volume | Fileystem Path
 ---------------|---------------
 vol1 | /dev/caleston_vg/vol1
 vol1 | /dev/mapper/caleston_vg-vol1
+
+Let's work through an example of seeting up a logical volueme.  First is LVM installed on the system.  Use the follwowing commands to check:
+```
+$ sudo pvdisplay
+[sudo] password for bob: 
+  --- Physical volume ---
+  PV Name               /dev/vda1
+  VG Name               vagrant-vg
+  PV Size               <10.00 GiB / not usable 2.00 MiB
+  Allocatable           yes (but full)
+  PE Size               4.00 MiB
+  Total PE              2559
+  Free PE               0
+  Allocated PE          2559
+  PV UUID               ecXq0T-x7d2-Hma9-rS1w-Mi02-st3y-EqIoiW'''
+```
+or 
+```
+$ sudo lvs
+  LV     VG         Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root   vagrant-vg -wi-ao----  <9.04g                                                    
+  swap_1 vagrant-vg -wi-ao---- 980.00m  
+```
+See the name of the physical vloume that has been created with pvdisplay command:
+```
+$ sudo pvdisplay
+  --- Physical volume ---
+  PV Name               /dev/vda1
+  VG Name               vagrant-vg
+  PV Size               <10.00 GiB / not usable 2.00 MiB
+  Allocatable           yes (but full)
+  PE Size               4.00 MiB
+  Total PE              2559
+  Free PE               0
+  Allocated PE          2559
+  PV UUID               ecXq0T-x7d2-Hma9-rS1w-Mi02-st3y-EqIoiW
+```
+This size fo thsi pv 10GB.  The volume group name is vagrant-vg  
+
+Let's take two disk /dev/vdb and /dev/vdc and create two pvs
+```
+$ sudo pvcreate /dev/vdb
+  Physical volume "/dev/vdb" successfully created.
+$ sudo pvcreate /dev/vdc
+  Physical volume "/dev/vdc" successfully created.
+```
+Now create a volume group called caleston_vg from the newly create pvs.
+```
+$ sudo vgcreate caleston_vg /dev/vdb /dev/vdc
+  Volume group "caleston_vg" successfully created
+```
+Create logical volume 1G in sized called data
+```
+$ sudo lvcreate -L 1G -n data caleston_vg
+  Logical volume "data" created.
+```
+Now create an ext4 file system on the lv and mount it to /mnt/media
+```
+$ sudo mkfs.ext4 /dev/caleston_vg/data
+mke2fs 1.44.1 (24-Mar-2018)
+Creating filesystem with 262144 4k blocks and 65536 inodes
+Filesystem UUID: 27594346-ed81-4102-81fc-2663782643b1
+Superblock backups stored on blocks: 
+        32768, 98304, 163840, 229376
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (8192 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+$ sudo mkdir /mnt/media
+$ sudo mount -t ext4 /dev/caleston_vg/data /mnt/media
+```
+Let's add 500m to the LV.  First check for available "disk" on the vg:
+```
+$ sudo vgs
+  VG          #PV #LV #SN Attr   VSize   VFree   
+  caleston_vg   2   1   0 wz--n-   1.99g 1016.00m
+  vagrant-vg    1   2   0 wz--n- <10.00g       0 
+```
+Now add the 500M to the filesytem.
+```
+$ sudo lvresize -L +500M /dev/caleston_vg/data
+  Size of logical volume caleston_vg/data changed from 1.00 GiB (256 extents) to <1.49 GiB (381 extents).
+  Logical volume caleston_vg/data successfully resized.
+$ sudo resize2fs /dev/caleston_vg/data
+resize2fs 1.44.1 (24-Mar-2018)
+Filesystem at /dev/caleston_vg/data is mounted on /mnt/media; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 1
+The filesystem on /dev/caleston_vg/data is now 390144 (4k) blocks long.
+```
+Check the mount size
+```
+df -hP /mnt/media
+Filesystem                    Size  Used Avail Use% Mounted on
+/dev/mapper/caleston_vg-data  1.5G  3.0M  1.4G   1% /mnt/media
+```
+
 
