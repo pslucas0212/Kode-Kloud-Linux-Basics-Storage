@@ -196,8 +196,8 @@ Partitioning alone do not make the disks usable.  The disk and partitions are se
 
 Linux File Systems
   
-      | EXT2 | EXT3 | EXT4
-|---- | ---- | ---- |-----
+blah | EXT2 | EXT3 | EXT4
+---- | ---- | ---- |-----
 Max file size | 2 TB File Size | 2 TB File Size | 16 TB File Size
   | 4 TB Volume size | 4 TB Volume size | 1 Exabyte
   | supports compression | Uses Journal | Uses Journal
