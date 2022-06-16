@@ -346,30 +346,49 @@ $ mount 10.16.13.201:/software/repos /mnt/software/repos
   
 ## Logical Volume Manager (LVM)
 
-Logical Volume Manager allows grouping of multiple physcial drives into one volume group where you can then carve out logical volumes.   This allows logical volumes to be easily resized.  
+Logical Volume Manager allows grouping of multiple physcial drives (hard disks or partitions) into one volume group where you can then carve out logical volumes.   This allows logical volumes to be easily resized dynamically as long as there space in the volume group.  
    
- 
-Install LVM
+ To use LVM, you first need to install LVM.
 ```
 $ apt-get install lvm2
+```
+Next identify free disks or partitions and create physical volume objects (pv).  For example we have one free disk /dev/sdb1.  Creat pv:
+```
 $ pvcreate /dev/sdb
+```
+Now create a volume group or vg.  A volume group can have one or more physcial volumes
+```
 $ vgcreate caleston_vg /dev/sdb
 $ pvdisplay
 $ vgdisplay
+```
+Lets create some logical volumes with lvcreat command.  Create a linear volume of 1GB.  -L linear command allows you to use multiple physical volumes to make the logical volume
+```
 $ lvcreate -L 1G -n vol1 caleston_vg
 $ lvdisplay
+```
+List volumes and create filesystem and mount
+```
 $ lvs
 $ mkfs.ext4 /dev/caleston_vg/vol1
 $ mount -t ext4 /dev/caleston_vg/vol1 /mnt/vol1
 ```
-Resize volumen - first see if there is enough size
+Resize volume on volume 1.  First use vgs command to see if there is enough room to increase the volume.  Then expand the voloume
 ```
 $ vgs
 $ lvresize -L +1G /dev/caleston_vg/vol1
 $ dfh -hP /mnt/vol1
 ```
-Resize file system size
+After resizind the volume, you will need to resize the filesytem to match the size of the volume
 ```
 $ resize2fs /dev/caleston_vg/vol1
 $ df -hP /mnt/vol1
 ```
+Notice that we can do this without stopping the system or unmounting the drive
+
+Logical Voluems are availabe at two places:
+Logical Volume | Fileystem Path
+---------------|---------------
+vol1 | /dev/caleston_vg/vol1
+vol1 | /dev/mapper/caleston_vg-vol1
+
