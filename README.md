@@ -196,7 +196,7 @@ Partitioning alone do not make the disks usable.  The disk and partitions are se
 
 Linux File Systems
 
-EXT2 and EXT3 do a great job of reliably storing data.  In case of an unclean shutdown EXT2 can take a long to reboot.  EXT3 implemented additional features to boot more quickly.  EXT 4 included additional features
+EXT2 and EXT3 do a great job of reliably storing data.  In case of an unclean shutdown EXT2 since it doesn't use a journal, can take a long to reboot.  EXT3 implemented additional features to boot more quickly.  EXT 4 included additional features
   
 Capabilities | EXT2 | EXT3 | EXT4
 -------------|------|------|-----
