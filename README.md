@@ -198,15 +198,15 @@ Linux File Systems
 
 EXT2 and EXT3 do a great job of reliably storing data.  In case of an unclean shutdown EXT2 can take a long to reboot.  EXT3 implemented additional features to boot more quickly.  EXT 4 included additional features
   
- | EXT2 | EXT3 | EXT4
--|------|------|-----
+Capabilities | EXT2 | EXT3 | EXT4
+-------------|------|------|-----
 Max file size | 2 TB File Size | 2 TB File Size | 16 TB File Size
 Max volume size | 4 TB Volume size | 4 TB Volume size | 1 Exabyte
 Other capabilites  | supports compression | Uses Journal | Uses Journal
 Compatiblilty with EXT3/EXT2| Support Linux permissions | Backwards Compatible | Backwards Compatible
 Crash recovery | Long crash Recovery | Faster Crash Recovery | Uses chsksum for Journal
   
-Creating file systems:
+Creating file systems.  In this example we will add a file system the /dev/dsb1 partition::
 ```
 $ mkfs.ext4 /dev/sdb1
 $ mkdir /mnt/ext4;
@@ -214,22 +214,23 @@ $ mount /dev/sdb1 /mnt/ext4
 $ mount | grep /dev/sdb1
 $ df -hP | grep /dev/sdb1
 ```
-To make permanent after reboot after entry to /etc/fstab:  
+To make mount permanent after reboot add an entry to /etc/fstab:  
+
+Add to file:
+```
+#<file system> <mount point>    <type>           <options>                              <dump>           <pass>
+/dev/sda1      /                ext4             defaults,relatime,errors=panic            0               1 ~
+```
   
 Field | Purpose
 ----- | -------
 Filesystem | Such as /dev/vdb1 to be mounted
 Mountpoint | Directory to be mounted on
 Type | Example ext2, ext3, ext4
-Options | Such as RW or RO
-Dump | 0=ignore, 1=backup
-Pass | 0=ignore, 1 or 2 = FSCK filesystem check enforced
+Options | Such as RW or RO - mounts file to read-wrote or read-only
+Dump | 0=ignore, 1=backup - 0 don't make a backup
+Pass | 0=ignore, 1 or 2 = FSCK filesystem check enforced - order of checking filesystem after crash. 1 is the maximum is usually set for the root file system
   
-Add to file:
-```
-#<file system> <mount point>    <type>           <options>                              <dump>           <pass>
-/dev/sda1      /                ext4             defaults,relatime,errors=panic            0               1 ~
-```
 or
 ```
 echo "/dev/sdb1  /mnt/ext4   ext4 rw 0 0" >> /etc/fstab
