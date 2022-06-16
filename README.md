@@ -235,7 +235,64 @@ or
 ```
 echo "/dev/sdb1  /mnt/ext4   ext4 rw 0 0" >> /etc/fstab
 ```
-    
+See disks and partitons example:
+```
+$ lsblk
+NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+vda                    252:0    0   10G  0 disk 
+└─vda1                 252:1    0   10G  0 part 
+  ├─vagrant--vg-root   253:0    0    9G  0 lvm  /
+  └─vagrant--vg-swap_1 253:1    0  980M  0 lvm  [SWAP]
+vdb                    252:16   0    1G  0 disk 
+vdc                    252:32   0    1G  0 disk /mnt/backups
+```
+Check for present filesystem (mounted file systems):
+```
+$ df -h
+Filesystem                    Size  Used Avail Use% Mounted on
+udev                          461M     0  461M   0% /dev
+tmpfs                          99M  5.4M   94M   6% /run
+/dev/mapper/vagrant--vg-root  8.9G  1.6G  6.9G  19% /
+tmpfs                         493M     0  493M   0% /dev/shm
+tmpfs                         5.0M     0  5.0M   0% /run/lock
+tmpfs                         493M     0  493M   0% /sys/fs/cgroup
+tmpfs                          99M     0   99M   0% /run/user/1002
+/dev/vdc                     1008M  1.3M  956M   1% /mnt/backups
+```
+Check for fileystem in use on a mounted filesystem:
+```
+$ sudo blkid /dev/vdc
+/dev/vdc: UUID="6cc962a4-a0a7-4d8a-a124-339cc63ff740" TYPE="ext2"
+```
+Make an ext4 file system on /dev/vdb and mount it to /mnt/data
+```
+$ sudo mkfs.ext4 /dev/vdb
+mke2fs 1.44.1 (24-Mar-2018)
+Creating filesystem with 262144 4k blocks and 65536 inodes
+Filesystem UUID: d62fe945-e483-4b6c-915e-bca8fadb4cdd
+Superblock backups stored on blocks: 
+        32768, 98304, 163840, 229376
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (8192 blocks): done
+Writing superblocks and filesystem accounting information: done
+```
+```
+$ sudo mkdir /mnt/data
+```
+```
+$ sudo mount /dev/vdb /mnt/data
+```
+```
+$ mount | grep /dev/vdb
+/dev/vdb on /mnt/data type ext4 (rw,relatime,data=ordered)
+```
+```
+$ df -hP | grep /dev/vdb
+/dev/vdb                      976M  2.6M  907M   1% /mnt/data
+```
+
  
 #### DAS, NAS and SAN
 Three types of storage - DAS -> Direct Attached Storage, NAS -> Network Attached Storage, SAN -> Storage Area Network (fiber attached)  
