@@ -199,7 +199,7 @@ Linux File Systems
 EXT2 and EXT3 do a great job of reliably storing data.  In case of an unclean shutdown EXT2 can take a long to reboot.  EXT3 implemented additional features to boot more quickly.  EXT 4 included additional features
   
  | EXT2 | EXT3 | EXT4
----- | ---- | ---- |-----
+-|------|------|-----
 Max file size | 2 TB File Size | 2 TB File Size | 16 TB File Size
 Max volume size | 4 TB Volume size | 4 TB Volume size | 1 Exabyte
 Other capabilites  | supports compression | Uses Journal | Uses Journal
