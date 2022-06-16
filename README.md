@@ -195,14 +195,16 @@ vdc                    252:32   0    1G  0 disk
 Partitioning alone do not make the disks usable.  The disk and partitions are seen by the kernal as a raw disk.  To write to a disk or partion we must first create a file system which defines how data is written to the disk.  After we create a file system we mount the file system to a directoy and then we can read and write data to the disk.
 
 Linux File Systems
+
+EXT2 and EXT3 do a great job of reliably storing data.  In case of an unclean shutdown EXT2 can take a long to reboot.  EXT3 implemented additional features to boot more quickly.  EXT 4 included additional features
   
-blah | EXT2 | EXT3 | EXT4
+ | EXT2 | EXT3 | EXT4
 ---- | ---- | ---- |-----
 Max file size | 2 TB File Size | 2 TB File Size | 16 TB File Size
-  | 4 TB Volume size | 4 TB Volume size | 1 Exabyte
-  | supports compression | Uses Journal | Uses Journal
-  | Support Linux permissions | Backwards Compatible | Backwards Compatible
-  | Long crash Recovery | Faster Crash Recovery | Uses chsksum for Journal
+Max volume size | 4 TB Volume size | 4 TB Volume size | 1 Exabyte
+Other capabilites  | supports compression | Uses Journal | Uses Journal
+Compatiblilty with EXT3/EXT2| Support Linux permissions | Backwards Compatible | Backwards Compatible
+Crash recovery | Long crash Recovery | Faster Crash Recovery | Uses chsksum for Journal
   
 Creating file systems:
 ```
