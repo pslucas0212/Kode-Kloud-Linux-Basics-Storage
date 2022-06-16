@@ -40,7 +40,7 @@ brw-rw----  1 root disk    179,   6 Jun  7 16:17 mmcblk0p6
 brw-rw----  1 root disk    179,   7 Jun  7 16:17 mmcblk0p7
 ...
 ```
-mcblk0 represents the entire disk and the part rerpresents partitions
+Note in this example the mcblk0 represents the entire disk as denoted by the disk in the type field, and the part in the type field rerpresents partitions.
 
 Each block device has a major and minor number.  The first number reprsent block device type and the second number identifies the whole disk and partitions created  
   
