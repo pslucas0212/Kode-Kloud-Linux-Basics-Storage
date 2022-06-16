@@ -292,9 +292,20 @@ $ mount | grep /dev/vdb
 $ df -hP | grep /dev/vdb
 /dev/vdb                      976M  2.6M  907M   1% /mnt/data
 ```
+Make the mount permanent by adding this line to /etc/fstab:
+```
+/dev/vdb        /mnt/data       ext4    rw                0        0
+```
+Updated /etc/fstab:
+```
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+/dev/mapper/vagrant--vg-root /               ext4    errors=remount-ro 0       1
+/dev/mapper/vagrant--vg-swap_1 none            swap    sw              0       0
+/dev/fd0        /media/floppy0  auto    rw,user,noauto,exec,utf8 0       0
+/dev/vdb        /mnt/data       ext4    rw                0        0
+``` 
 
- 
-#### DAS, NAS and SAN
+## DAS, NAS and SAN
 Three types of storage - DAS -> Direct Attached Storage, NAS -> Network Attached Storage, SAN -> Storage Area Network (fiber attached)  
 DAS - connects directly to the host system s
   
