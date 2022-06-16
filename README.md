@@ -235,6 +235,7 @@ or
 ```
 echo "/dev/sdb1  /mnt/ext4   ext4 rw 0 0" >> /etc/fstab
 ```
+In the follwoing lines we want to create and mount and ext4 filesystem on an available drive (or partition).  We will have to first determine the disks/partions available.    
 See disks and partitons example:
 ```
 $ lsblk
@@ -246,7 +247,7 @@ vda                    252:0    0   10G  0 disk
 vdb                    252:16   0    1G  0 disk 
 vdc                    252:32   0    1G  0 disk /mnt/backups
 ```
-Check for present filesystem (mounted file systems):
+Check for present filesystem (mounted file systems).  Note only disks/partions that are mounted have fileystem:
 ```
 $ df -h
 Filesystem                    Size  Used Avail Use% Mounted on
