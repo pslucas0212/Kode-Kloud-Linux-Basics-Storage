@@ -191,16 +191,18 @@ vdb                    252:16   0    1G  0 disk
 └─vdb1                 252:17   0  500M  0 part 
 vdc                    252:32   0    1G  0 disk 
 ```
-#### File Systems in Linux  
-Partitioning alone do not make the disks usable.  TO write disk you must create a file system and mount to a direct to read and write data to the partition.  
+## File Systems in Linux  
+Partitioning alone do not make the disks usable.  The disk and partitions are seen by the kernal as a raw disk.  To write to a disk or partion we must first create a file system which defines how data is written to the disk.  After we create a file system we mount the file system to a directoy and then we can read and write data to the disk.
+
+Linux File Systems
   
-EXT2 | EXT3 | EXT4
----- | ---- | ----
-2 TB File Size | 2 TB File Size | 16 TB File Size
-4 TB Volume size | 4 TB Volume size | 1 Exabyte
-supports compression | Uses Journal | Uses Journal
-Support Linux permissions | Backwards Compatible | Backwards Compatible
-Long crash Recovery | Faster Crash Recovery | Uses chsksum for Journal
+      | EXT2 | EXT3 | EXT4
+|---- | ---- | ---- |-----
+Max file size | 2 TB File Size | 2 TB File Size | 16 TB File Size
+  | 4 TB Volume size | 4 TB Volume size | 1 Exabyte
+  | supports compression | Uses Journal | Uses Journal
+  | Support Linux permissions | Backwards Compatible | Backwards Compatible
+  | Long crash Recovery | Faster Crash Recovery | Uses chsksum for Journal
   
 Creating file systems:
 ```
